@@ -20,6 +20,9 @@ def url_check(url):
 
 
 def main():
+    if len(sys.argv) != 3:
+        print("Invalid number of arguments!")
+        return
     if sys.argv[1] == '-url':
         url_check(sys.argv[2])
     elif sys.argv[1] == '-ftp':
