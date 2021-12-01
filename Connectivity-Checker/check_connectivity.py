@@ -6,6 +6,9 @@ from urllib import error
 import psycopg2
 from urllib.parse import urlparse
 
+import pymongo
+from pymongo import MongoClient
+
 
 def url_check(url):
     if url[0:3] == "www":
@@ -47,6 +50,15 @@ def check_postgres(uri):
         print("False: " + str(e))
 
 
+def check_mongo(uri):
+    # mongodb+srv://admin:admin@cluster0.avzid.mongodb.net/myFirstDatabase?retryWrites=true
+    try:
+        conn = MongoClient(uri)
+        print(True)
+    except Exception as e:
+        print(False)
+
+
 def main():
     if len(sys.argv) != 3:
         print("Invalid number of arguments!")
@@ -56,7 +68,7 @@ def main():
     elif sys.argv[1] == '-ftp':
         ftp_check(sys.argv[2])
     elif sys.argv[1] == '-mongodb':
-        print("mongodb")
+        check_mongo(sys.argv[2])
     elif sys.argv[1] == '-postgresql':
         check_postgres(sys.argv[2])
     elif sys.argv[1] == '-elastic':
