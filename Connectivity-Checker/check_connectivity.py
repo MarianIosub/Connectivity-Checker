@@ -1,6 +1,9 @@
+import datetime
 import sys
 import urllib
 from ftplib import FTP
+from threading import Thread
+from time import sleep
 from urllib import error
 from urllib import request
 from urllib.parse import urlparse
@@ -26,7 +29,7 @@ def url_check(url):
 
 
 def ftp_check(ftp_link):
-    # ftp://192.168.1.5:21
+    # 192.168.1.5:21
     # ftp.gnu.org
     try:
         ftp = FTP()
@@ -36,7 +39,7 @@ def ftp_check(ftp_link):
         else:
             ftp.connect(ftp_link)
         print(True)
-    except Exception as e:
+    except Exception:
         print(False)
 
 
@@ -57,16 +60,16 @@ def check_postgres(uri):
             port=port
         )
         print(True)
-    except Exception as e:
+    except Exception:
         print(False)
 
 
 def check_mongo(uri):
     # mongodb+srv://admin:admin@cluster0.avzid.mongodb.net/myFirstDatabase?retryWrites=true
     try:
-        conn = MongoClient(uri)
+        _ = MongoClient(uri)
         print(True)
-    except Exception as e:
+    except Exception:
         print(False)
 
 
@@ -78,12 +81,12 @@ def check_elastic(uri):
     hostname = result.hostname
     port = result.port
     try:
-        elastic = Elasticsearch(hostname, sniff_on_start=True, sniff_on_connection_fail=True,
-                                sniffer_timeout=10,
-                                scheme="https",
-                                http_auth=(username, password), port=port)
+        _ = Elasticsearch(hostname, sniff_on_start=True, sniff_on_connection_fail=True,
+                          sniffer_timeout=10,
+                          scheme="https",
+                          http_auth=(username, password), port=port)
         print(True)
-    except Exception as e:
+    except Exception:
         print(False)
 
 
@@ -104,11 +107,32 @@ def check_case():
         return
 
 
+def translate_timeout(timeout):
+    if timeout == "1m":
+        return 60
+    elif timeout == "1h":
+        return 3600
+    elif timeout == "10s":
+        return 10
+    elif timeout == "1d":
+        return 24 * 3600
+    else:
+        return 0
+
+
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("Invalid number of arguments!")
         return
-    check_case()
+    timeout = translate_timeout(sys.argv[3])
+    if timeout == 0:
+        check_case()
+    else:
+        while True:
+            print()
+            print(datetime.datetime.now())
+            _ = Thread(check_case())
+            sleep(timeout)
 
 
 if __name__ == '__main__':
