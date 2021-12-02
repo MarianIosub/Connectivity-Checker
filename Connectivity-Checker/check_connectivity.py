@@ -42,7 +42,8 @@ def ftp_check(ftp_link):
 
 def check_postgres(uri):
     # mdtdoxetgisriv:e980d8c00263e2fb362485c68e4933987f3df27c8daeaabfd3dc2b167984dcd7@ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/d1qujjivcif155
-    uri = "postgres://" + uri
+    if not uri.startswith("postgres://"):
+        uri = "postgres://" + uri
     result = urlparse(uri)
     username = result.username
     password = result.password
@@ -64,7 +65,8 @@ def check_postgres(uri):
 
 def check_mongo(uri):
     # admin:admin@cluster0.avzid.mongodb.net/myFirstDatabase
-    uri = "mongodb+srv://" + uri
+    if not uri.startswith("mongodb+srv://"):
+        uri = "mongodb+srv://" + uri
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=1000)
         client.server_info()
@@ -75,7 +77,8 @@ def check_mongo(uri):
 
 def check_elastic(uri):
     # elastic:hMpN61lr3zVQBy30fwlByWmO@test-python.es.us-central1.gcp.cloud.es.io:9243
-    uri = "elastic://" + uri
+    if not uri.startswith("elastic://"):
+        uri = "elastic://" + uri
     result = urlparse(uri)
     username = result.username
     password = result.password
