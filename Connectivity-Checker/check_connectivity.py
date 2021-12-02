@@ -1,12 +1,11 @@
 import sys
 import urllib
-import psycopg2
-import pymongo
-
-from urllib import request
+from ftplib import FTP
 from urllib import error
+from urllib import request
 from urllib.parse import urlparse
 
+import psycopg2
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
@@ -27,7 +26,18 @@ def url_check(url):
 
 
 def ftp_check(ftp_link):
-    pass
+    # ftp://192.168.1.5:21
+    # ftp.gnu.org
+    try:
+        ftp = FTP()
+        if ':' in ftp_link:
+            url, port = ftp_link.split(":")
+            ftp.connect(url, int(port))
+        else:
+            ftp.connect(ftp_link)
+        print(True)
+    except Exception as e:
+        print(False)
 
 
 def check_postgres(uri):
@@ -77,10 +87,8 @@ def check_elastic(uri):
         print(False)
 
 
-def main():
-    if len(sys.argv) < 3:
-        print("Invalid number of arguments!")
-        return
+def check_case():
+    print("Checking connectivity for: " + sys.argv[2])
     if sys.argv[1] == '-url':
         url_check(sys.argv[2])
     elif sys.argv[1] == '-ftp':
@@ -94,6 +102,13 @@ def main():
     else:
         print("Invalid domain for checking!")
         return
+
+
+def main():
+    if len(sys.argv) != 3:
+        print("Invalid number of arguments!")
+        return
+    check_case()
 
 
 if __name__ == '__main__':
