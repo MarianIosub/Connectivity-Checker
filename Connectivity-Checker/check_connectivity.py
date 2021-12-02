@@ -1,12 +1,13 @@
 import sys
 import urllib
+import psycopg2
+import pymongo
+
 from urllib import request
 from urllib import error
-
-import psycopg2
 from urllib.parse import urlparse
 
-import pymongo
+from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
 
@@ -16,7 +17,7 @@ def url_check(url):
     try:
         status_code = urllib.request.urlopen(url).getcode()
     except urllib.error.HTTPError:
-        print("False")
+        print(False)
         return
     except urllib.error.URLError:
         print(False)
@@ -30,7 +31,7 @@ def ftp_check(ftp_link):
 
 
 def check_postgres(uri):
-    # postgres: // mdtdoxetgisriv: e980d8c00263e2fb362485c68e4933987f3df27c8daeaabfd3dc2b167984dcd7 @ ec2 - 176 - 34 - 105 - 15.eu - west - 1.compute.amazonaws.com: 5432 / d1qujjivcif155
+    # postgres://mdtdoxetgisriv:e980d8c00263e2fb362485c68e4933987f3df27c8daeaabfd3dc2b167984dcd7@ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/d1qujjivcif155
     result = urlparse(uri)
     username = result.username
     password = result.password
@@ -45,9 +46,9 @@ def check_postgres(uri):
             host=hostname,
             port=port
         )
-        print("True")
+        print(True)
     except Exception as e:
-        print("False: " + str(e))
+        print(False)
 
 
 def check_mongo(uri):
@@ -59,8 +60,25 @@ def check_mongo(uri):
         print(False)
 
 
+def check_elastic(uri):
+    # elastic://elastic:hMpN61lr3zVQBy30fwlByWmO@test-python.es.us-central1.gcp.cloud.es.io:9243
+    result = urlparse(uri)
+    username = result.username
+    password = result.password
+    hostname = result.hostname
+    port = result.port
+    try:
+        elastic = Elasticsearch(hostname, sniff_on_start=True, sniff_on_connection_fail=True,
+                                sniffer_timeout=10,
+                                scheme="https",
+                                http_auth=(username, password), port=port)
+        print(True)
+    except Exception as e:
+        print(False)
+
+
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3:
         print("Invalid number of arguments!")
         return
     if sys.argv[1] == '-url':
@@ -72,7 +90,7 @@ def main():
     elif sys.argv[1] == '-postgresql':
         check_postgres(sys.argv[2])
     elif sys.argv[1] == '-elastic':
-        print("elastic")
+        check_elastic(sys.argv[2])
     else:
         print("Invalid domain for checking!")
         return
