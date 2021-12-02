@@ -1,14 +1,14 @@
 import datetime
 import sys
 import urllib
+import psycopg2
+
 from ftplib import FTP
 from threading import Thread
 from time import sleep
 from urllib import error
 from urllib import request
 from urllib.parse import urlparse
-
-import psycopg2
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
