@@ -14,14 +14,11 @@ from pymongo import MongoClient
 
 
 def url_check(url):
-    if url[0:3] == "www":
+    if url[0:8] != "https://":
         url = "https://" + url
     try:
         status_code = urllib.request.urlopen(url).getcode()
-    except urllib.error.HTTPError:
-        print(False)
-        return
-    except urllib.error.URLError:
+    except Exception:
         print(False)
         return
     website_is_up = status_code == 200.
@@ -77,7 +74,7 @@ def check_mongo(uri):
 
 
 def check_elastic(uri):
-    # elastic://elastic:hMpN61lr3zVQBy30fwlByWmO@test-python.es.us-central1.gcp.cloud.es.io:9243
+    # elastic:hMpN61lr3zVQBy30fwlByWmO@test-python.es.us-central1.gcp.cloud.es.io:9243
     uri = "elastic://" + uri
     result = urlparse(uri)
     username = result.username
