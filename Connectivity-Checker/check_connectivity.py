@@ -6,7 +6,6 @@ import psycopg2
 from ftplib import FTP
 from threading import Thread
 from time import sleep
-from urllib import error
 from urllib import request
 from urllib.parse import urlparse
 from elasticsearch import Elasticsearch
@@ -14,7 +13,7 @@ from pymongo import MongoClient
 
 
 def url_check(url):
-    if url[0:8] != "https://":
+    if not url.startswith("https://"):
         url = "https://" + url
     try:
         status_code = urllib.request.urlopen(url).getcode()
@@ -41,7 +40,7 @@ def ftp_check(ftp_link):
 
 
 def check_postgres(uri):
-    # mdtdoxetgisriv:e980d8c00263e2fb362485c68e4933987f3df27c8daeaabfd3dc2b167984dcd7@ec2-176-34-105-15.eu-west-1.compute.amazonaws.com:5432/d1qujjivcif155
+    # hciifixvboxlvz:0341d5fa6a5b36572ab44c6107d42a971f33c9fb2d1a478173a80c88258d2fc2@ec2-54-74-95-84.eu-west-1.compute.amazonaws.com:5432/d6bs5ovruh4v6i
     if not uri.startswith("postgres://"):
         uri = "postgres://" + uri
     result = urlparse(uri)
